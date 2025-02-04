@@ -1,0 +1,23 @@
+
+# Ignorar entornos virtuales de Python
+env/
+.venv/
+.env/
+
+# Archivos de configuración de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de dependencias
+Pipfile
+Pipfile.lock
+
+# Archivos de entorno
+.env
+.env.*
+
+# Configuración de IDEs
+.vscode/
+.idea/
