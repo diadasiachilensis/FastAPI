@@ -1,7 +1,7 @@
 # fastAPI
 
 ## **Explicación detallada del código en FastAPI**
-El código que me compartiste define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
+El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
 
 ---
 
@@ -208,5 +208,3 @@ async def create_customer(customer_data: CustomerCreate):
 - ✅ **`models.py`** define estructuras de datos con **Pydantic**.
 - ✅ **`main.py`** define rutas que permiten **crear y listar clientes, transacciones y facturas**.
 - 📌 **La API necesita una base de datos real** para almacenar datos de forma permanente.
-
-¿Tienes alguna pregunta o quieres mejorar algo en el código? 😊
