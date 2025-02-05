@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 # Definimos una clase base para los clientes.
-class CustomerBase(BaseModel):
+class CustomerBase(BaseModel): #heredar BaseModel para agregar campos que sean validos sin necesidad de hacer algun otro metodo para crear estas validaciones.
     name       : str  # Nombre del cliente.
     description: str | None  # Descripción opcional.
     email      : str  # Correo electrónico.
@@ -20,7 +20,7 @@ class Customer(CustomerBase):
 class Transaction(BaseModel):
     id         : int  # Identificador único de la transacción.
     ammount    : int  # Monto de la transacción.
-    description: str | None  # Descripción opcional.
+    description: str | None  # Descripción opcional con |.
 
 # Definimos la estructura de una factura (Invoice).
 class Invoice(BaseModel):

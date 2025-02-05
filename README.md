@@ -2,10 +2,9 @@
 
 ## 📌 Índice
 1. [Explicación detallada del código en FastAPI](#explicación-detallada-del-código-en-fastapi)
-2. [1. Estructura del Código](#1-estructura-del-código)
-3. [2. Explicación de `models.py` (Modelos de datos)](#2-explicación-de-modelspy-modelos-de-datos)
+2. [Validación de datos con Pydantic](#Validación-de-datos-con-Pydantic)
    - [📌 Importación de Pydantic](#📌-importación-de-pydantic)
-   - [📌 Modelo `CustomerBase`](#📌-modelo-customerbase)
+   - [📌 Modelo `CustomerBase`](#📌-Modelo-CustomerBase)
    - [📌 Modelo `CustomerCreate`](#📌-modelo-customercreate)
    - [📌 Modelo `Customer`](#📌-modelo-customer)
    - [📌 Modelo `Transaction`](#📌-modelo-transaction)
@@ -23,30 +22,20 @@
    - [✅ 1. Endpoints y Métodos HTTP](#✅-1-endpoints-y-métodos-http)
    - [✅ 2. Tipado Estricto y Validación con Pydantic](#✅-2-tipado-estricto-y-validación-con-pydantic)
    - [✅ 3. Asincronía (`async/await`)](#✅-3-asincronía-asyncawait)
-6. [5. ¿Qué son los Endpoints?](#5-¿qué-son-los-endpoints)
-   - [📌 Ejemplo de un Endpoint en FastAPI](#📌-ejemplo-de-un-endpoint-en-fastapi)
+6. [5. ¿Qué son los Endpoints?](#¿Qué-son-los-Endpoints?)
+   - [📌 Ejemplo de un Endpoint en FastAPI](#📌-Ejemplo-de-un-Endpoint-en-Fastapi) 
    - [📌 Ejemplo de Uso en `curl`](#📌-ejemplo-de-uso-en-curl)
    - [📌 Ejemplo de Endpoint con Método POST](#📌-ejemplo-de-endpoint-con-método-post)
 7. [6. Ejemplo de Uso con `curl`](#6-ejemplo-de-uso-con-curl)
-8. [7. Conclusión](#7-conclusión)
-
-
 
 ## **Explicación detallada del código en FastAPI**
 El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
 
 ---
+## Validación de datos con Pydantic
+Para crear un endpoint dinámico y seguro en FastAPI, es fundamental validar la información recibida, especialmente si el contenido se envía en el cuerpo de la solicitud. Los usuarios pueden ingresar datos incorrectos o no válidos, como un correo electrónico mal formateado, por lo que validar estos datos es crucial para el correcto funcionamiento de la API. 
 
-## **1. Estructura del Código**
-El código está organizado en dos archivos principales:
-
-1. **`main.py`** → Define la API, sus rutas y la lógica de procesamiento de datos.
-2. **`models.py`** → Define los modelos de datos utilizando **Pydantic**, que nos ayuda a validar la estructura de los datos recibidos y enviados.
-
----
-
-## **2. Explicación de `models.py` (Modelos de datos)**
-Este archivo define la estructura de los datos que maneja la API. Utiliza **Pydantic**, una librería de validación de datos en Python, para garantizar que los datos sean correctos antes de ser procesados.
+FastAPI facilita esta validación a través de **Pydantic**, una biblioteca de Python que permite construir modelos de datos robustos. A continuación, exploraremos cómo crear un modelo básico de cliente para validar datos en un endpoint.
 
 ### 📌 **Importación de Pydantic**
 ```python
@@ -55,18 +44,43 @@ from pydantic import BaseModel
 - **`BaseModel`**: Clase base de Pydantic que permite definir modelos de datos con validación automática.
 
 ---
-
-### 📌 **Modelo `CustomerBase`**
+### 📌 **Modelo CustomerBase**
 ```python
 class CustomerBase(BaseModel):
-    name       : str  # Nombre del cliente (obligatorio).
-    description: str | None  # Descripción opcional del cliente.
-    email      : str  # Correo electrónico (obligatorio).
-    age        : int  # Edad del cliente (obligatorio).
+    name       : str         # Nombre del cliente (obligatorio).
+    description: str | None  # Descripción opcional del cliente por el operador logico |.
+    email      : str         # Correo electrónico (obligatorio).
+    age        : int         # Edad del cliente (obligatorio).
 ```
-Este modelo define las propiedades básicas de un **Cliente**:
+Este modelo define las propiedades básicas de un **Cliente** para que sean validos para el endpoint que los datos que esta ingresando el usuario sean los validos:
 - **`name`**, **`email`** y **`age`** son obligatorios.
 - **`description`** es opcional (`None` significa que puede faltar).
+---
+### 📌 Integrar el modelo CustomerBase al endpoint
+
+Una vez definido el modelo, el siguiente paso es integrarlo en un endpoint. Esto se realiza mediante una función asincrónica, por ejemplo, ``async def create_customer``, que acepta datos de tipo ``Customer`` en el cuerpo de la solicitud.
+
+```python
+@app.post("/customers")
+async def create_customer(customer_data: Customer):
+    return customer_data
+```
+
+1. Se define el endpoint con el método `post`, para la creacion las APIRest necesitan el metodo ``post``.
+2. Se registran los datos del cliente con el decorador ``@app.post("/customers")``.
+3. En el cuerpo de la solicitud, los datos enviados serán automáticamente validados según el esquema de `Customer`.
+4. Finalmente, la función puede retornar los mismos datos recibidos para verificar su recepción o realizar acciones adicionales como guardar en una base de datos o enviar una notificación.
+---
+
+## Modelado de Datos en APIs con FastAPI
+
+Para diseñar una API robusta y eficiente, es fundamental modelar correctamente los datos. Un buen diseño de modelos no solo permite organizar y estructurar la información de manera eficiente, sino que también facilita la conexión entre distintos modelos y optimiza la funcionalidad de la API. En esta guía, exploraremos cómo crear modelos en **FastAPI** para estructurar datos, conectar modelos y mejorar la base de datos.
+
+Cuando se desarrolla una API, es recomendable mantener los modelos en un archivo separado, como **`models.py`**, en lugar de definirlos dentro del archivo principal (`main.py`). Esta práctica ayuda a evitar el **"código espagueti"**, manteniendo el código modular, limpio y fácil de mantener. Aunque **FastAPI** no impone esta estructura, es una convención ampliamente utilizada en el desarrollo de aplicaciones en **Python**.
+
+Para implementar esta organización, se deben copiar los modelos de datos y la clase **`BaseModel`** de **Pydantic** desde `main.py` y moverlos a `models.py`. Esto permite centralizar la definición de los modelos, facilitando su reutilización y modificación sin afectar directamente la lógica de la API.
+
+El éxito de una API depende en gran medida de cómo se modelan los datos. Definir correctamente los modelos mejora la eficiencia de la base de datos y permite conectar adecuadamente la información dentro de la API. Utilizar un archivo **`models.py`** no solo es una práctica recomendada en **FastAPI**, sino que también es una buena práctica **"pythónica"**, alineada con los principios de modularidad y organización en el desarrollo de software.
 
 ---
 
@@ -234,10 +248,111 @@ async def create_customer(customer_data: CustomerCreate):
 - Es útil en aplicaciones con muchas conexiones simultáneas (como APIs web de alto tráfico).
 
 ---
+## **¿Qué son los Endpoints?**
+Un **endpoint** es una URL específica dentro de una API que permite a los clientes (usuarios o aplicaciones) **enviar y recibir datos** mediante **solicitudes HTTP**. 
 
+En **FastAPI**, los endpoints están definidos por funciones que manejan solicitudes **GET, POST, PUT, DELETE**, entre otras.
 
-## **Conclusión**
-- 🚀 **FastAPI** es rápido y potente, con validación automática y compatibilidad con asincronía.
-- ✅ **`models.py`** define estructuras de datos con **Pydantic**.
-- ✅ **`main.py`** define rutas que permiten **crear y listar clientes, transacciones y facturas**.
-- 📌 **La API necesita una base de datos real** para almacenar datos de forma permanente.
+### 📌 **Ejemplo de un Endpoint en FastAPI**
+En tu script `main.py`, tienes el siguiente endpoint:
+
+```python
+@app.get("/customers", response_model=list[Customer])
+async def list_customer():
+    return db_customers
+```
+
+🔹 **Explicación:**
+1. `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
+2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
+3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
+4. `return db_customers` → Devuelve la lista de clientes almacenados.
+
+### 📌 **¿Cómo funciona este endpoint en la práctica?**
+- Un usuario o una aplicación puede hacer una **solicitud GET** a **`/customers`**.
+- La API responderá con una lista de clientes en formato **JSON**.
+
+---
+
+## **Ejemplo de Uso en `curl`**
+Si quieres obtener la lista de clientes desde la terminal, puedes usar:
+
+```sh
+curl -X 'GET' 'http://127.0.0.1:8000/customers' -H 'accept: application/json'
+```
+
+🔹 **Salida esperada (si hay clientes en la base de datos simulada)**:
+```json
+[
+    {
+        "id": 0,
+        "name": "Juan Pérez",
+        "description": "Cliente VIP",
+        "email": "juan@example.com",
+        "age": 35
+    },
+    {
+        "id": 1,
+        "name": "María López",
+        "description": "Cliente regular",
+        "email": "maria@example.com",
+        "age": 29
+    }
+]
+```
+
+Si no hay clientes, el resultado será un **JSON vacío**: `[]`.
+
+---
+
+## **Ejemplo de Endpoint con Método POST**
+Otro ejemplo en `main.py` es el endpoint para **crear clientes**:
+
+```python
+@app.post("/customers", response_model=Customer)
+async def create_customer(customer_data: CustomerCreate):
+    customer = Customer.model_validate(customer_data.model_dump())  # Convierte los datos a un objeto Customer
+    customer.id = len(db_customers)  # Asigna un ID único
+    db_customers.append(customer)  # Guarda el cliente en la lista simulada
+    return customer  # Devuelve el cliente creado
+```
+
+🔹 **¿Cómo funciona este endpoint?**
+1. Se accede con **POST** en **`/customers`**.
+2. Recibe datos en formato **JSON** con la estructura de `CustomerCreate`.
+3. Se valida y almacena el cliente en la base de datos en memoria.
+4. Devuelve el cliente creado.
+
+---
+
+## **Ejemplo de Uso con curl**
+Para **crear un nuevo cliente**, usa:
+
+```sh
+curl -X 'POST' 'http://127.0.0.1:8000/customers' \
+     -H 'Content-Type: application/json' \
+     -d '{
+           "name": "Carlos Gómez",
+           "description": "Nuevo cliente",
+           "email": "carlos@example.com",
+           "age": 40
+         }'
+```
+
+🔹 **Salida esperada:**
+```json
+{
+    "id": 2,
+    "name": "Carlos Gómez",
+    "description": "Nuevo cliente",
+    "email": "carlos@example.com",
+    "age": 40
+}
+```
+---
+
+## **Sintesis**
+- Un **endpoint** es una dirección en la API que maneja solicitudes HTTP específicas.
+- FastAPI usa **decoradores** (`@app.get()`, `@app.post()`, etc.) para definir endpoints.
+- Puedes probarlos con herramientas como `curl` o Postman.
+- `GET` sirve para **obtener** datos, `POST` para **enviar** datos, entre otros.
