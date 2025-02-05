@@ -2,17 +2,21 @@
 
 from pydantic import BaseModel
 
-class Customer(BaseModel):
-    id         : int | None
+class CustomerBase(BaseModel):
     name       : str
     description: str | None
     email      : str
     age        : int
 
-class CustomerCreate():
-    #herencia
 
+class CustomerCreate(CustomerBase):
+    #herencia
     pass
+
+class Customer(CustomerBase):
+    id         : int | None = None 
+
+
 
 class Transaction(BaseModel):
     id         : int
