@@ -1,33 +1,35 @@
-# fastAPI
-
 # Documentación de la API - FastAPI
 
 ## 📌 Índice
-1. [Introducción](#introducción)
-2. [Estructura del Proyecto](#estructura-del-proyecto)
-3. [Instalación y Configuración](#instalación-y-configuración)
-4. [Explicación de los Modelos de Datos (`models.py`)](#explicación-de-los-modelos-de-datos-modelspy)
+1. [Explicación detallada del código en FastAPI](#explicación-detallada-del-código-en-fastapi)
+2. [Estructura del Código](#estructura-del-código)
+3. [Explicación de `models.py` (Modelos de datos)](#explicación-de-modelspy-modelos-de-datos)
    - [Importación de Pydantic](#importación-de-pydantic)
    - [Modelo `CustomerBase`](#modelo-customerbase)
    - [Modelo `CustomerCreate`](#modelo-customercreate)
    - [Modelo `Customer`](#modelo-customer)
    - [Modelo `Transaction`](#modelo-transaction)
-   - [Modelo `Invoice`](#modelo-invoice)
-5. [Explicación de las Rutas de la API (`main.py`)](#explicación-de-las-rutas-de-la-api-mainpy)
+   - [Modelo `Invoice`](#modelo-invoice-factura)
+4. [Explicación de `main.py` (Rutas de la API)](#explicación-de-mainpy-rutas-de-la-api)
+   - [Importaciones](#importaciones)
    - [Instancia de FastAPI](#instancia-de-fastapi)
    - [Ruta raíz (`GET /`)](#ruta-raíz-get-)
-   - [Base de Datos Simulada](#base-de-datos-simulada)
+   - [Base de datos simulada](#base-de-datos-simulada)
    - [Crear un Cliente (`POST /customers`)](#crear-un-cliente-post-customers)
    - [Listar Clientes (`GET /customers`)](#listar-clientes-get-customers)
    - [Crear una Transacción (`POST /transactions`)](#crear-una-transacción-post-transactions)
    - [Crear una Factura (`POST /invoices`)](#crear-una-factura-post-invoices)
-6. [Conceptos Clave de FastAPI](#conceptos-clave-de-fastapi)
+5. [Conceptos Clave de FastAPI](#conceptos-clave-de-fastapi)
    - [Endpoints y Métodos HTTP](#endpoints-y-métodos-http)
    - [Tipado Estricto y Validación con Pydantic](#tipado-estricto-y-validación-con-pydantic)
    - [Asincronía (`async/await`)](#asincronía-asyncawait)
-7. [Ejemplo de Uso con `curl`](#ejemplo-de-uso-con-curl)
-8. [Ejecución del Servidor](#ejecución-del-servidor)
-9. [Mejoras y Próximos Pasos](#mejoras-y-próximos-pasos)
+6. [¿Qué son los Endpoints?](#qué-son-los-endpoints)
+   - [Ejemplo de un Endpoint en FastAPI](#ejemplo-de-un-endpoint-en-fastapi)
+   - [Ejemplo de Uso en `curl`](#ejemplo-de-uso-en-curl)
+   - [Ejemplo de Endpoint con Método POST](#ejemplo-de-endpoint-con-método-post)
+7. [Ejemplo de Uso con `curl`](#ejemplo-de-uso-con-curl-1)
+8. [Conclusión](#conclusión)
+
 
 ## **Explicación detallada del código en FastAPI**
 El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
@@ -231,6 +233,7 @@ async def create_customer(customer_data: CustomerCreate):
 - Es útil en aplicaciones con muchas conexiones simultáneas (como APIs web de alto tráfico).
 
 ---
+
 
 ## **Conclusión**
 - 🚀 **FastAPI** es rápido y potente, con validación automática y compatibilidad con asincronía.
