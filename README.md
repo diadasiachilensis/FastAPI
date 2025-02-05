@@ -1,5 +1,34 @@
 # fastAPI
 
+# Documentación de la API - FastAPI
+
+## 📌 Índice
+1. [Introducción](#introducción)
+2. [Estructura del Proyecto](#estructura-del-proyecto)
+3. [Instalación y Configuración](#instalación-y-configuración)
+4. [Explicación de los Modelos de Datos (`models.py`)](#explicación-de-los-modelos-de-datos-modelspy)
+   - [Importación de Pydantic](#importación-de-pydantic)
+   - [Modelo `CustomerBase`](#modelo-customerbase)
+   - [Modelo `CustomerCreate`](#modelo-customercreate)
+   - [Modelo `Customer`](#modelo-customer)
+   - [Modelo `Transaction`](#modelo-transaction)
+   - [Modelo `Invoice`](#modelo-invoice)
+5. [Explicación de las Rutas de la API (`main.py`)](#explicación-de-las-rutas-de-la-api-mainpy)
+   - [Instancia de FastAPI](#instancia-de-fastapi)
+   - [Ruta raíz (`GET /`)](#ruta-raíz-get-)
+   - [Base de Datos Simulada](#base-de-datos-simulada)
+   - [Crear un Cliente (`POST /customers`)](#crear-un-cliente-post-customers)
+   - [Listar Clientes (`GET /customers`)](#listar-clientes-get-customers)
+   - [Crear una Transacción (`POST /transactions`)](#crear-una-transacción-post-transactions)
+   - [Crear una Factura (`POST /invoices`)](#crear-una-factura-post-invoices)
+6. [Conceptos Clave de FastAPI](#conceptos-clave-de-fastapi)
+   - [Endpoints y Métodos HTTP](#endpoints-y-métodos-http)
+   - [Tipado Estricto y Validación con Pydantic](#tipado-estricto-y-validación-con-pydantic)
+   - [Asincronía (`async/await`)](#asincronía-asyncawait)
+7. [Ejemplo de Uso con `curl`](#ejemplo-de-uso-con-curl)
+8. [Ejecución del Servidor](#ejecución-del-servidor)
+9. [Mejoras y Próximos Pasos](#mejoras-y-próximos-pasos)
+
 ## **Explicación detallada del código en FastAPI**
 El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
 
