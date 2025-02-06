@@ -401,7 +401,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 
 🔹**Salida esperada:**
 
-    ```js
+    ```javascript
     {
         "id": 2,
         "name": "Carlos Gómez",
@@ -420,7 +420,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 
 🔹 **Salida esperada (si hay clientes en la base de datos simulada)**:
 
-    ```js
+    ```javascript
     [
         {
             "id": 0,
