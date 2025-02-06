@@ -1,50 +1,41 @@
 # Documentación de la API - FastAPI
 
-## 📌 Índice
+# 📌 Índice
 
-# Índice
-
-1. [Explicación detallada del código en FastAPI](#Explicación-detallada-del-código-en-FastAPI)
-2. [Validación de datos con Pydantic](#Validación-de-datos-con-Pydantic)
-   - [📌 Importación de Pydantic](#📌-Importación-de-Pydantic)
-   - [📌 Modelo CustomerBase](#📌-Modelo-CustomerBase)
-   - [📌 Integrar el modelo CustomerBase al endpoint](#📌-Integrar-el-modelo-CustomerBase-al-endpoint)
-3. [Modelado de Datos en APIs con FastAPI](#Modelado-de-Datos-en-APIs-con-FastAPI)
-   - [📌 Script models.py](#📌-Script-modelspy)
-   - [📃 ¿Por qué usar models.py?](#📃-¿Por-qué-usar-modelspy)
-   - [📌 Importación de Pydantic](#📌-Importación-de-Pydantic-1)
-   - [📌 Modelo de Datos](#📌-Modelo-de-Datos)
-   - [📌 Creación de Modelos Diferenciados](#📌-Creación-de-Modelos-Diferenciados)
-4. [Creación de relaciones entre datos](#Creación-de-relaciones-entre-datos)
-   - [📌 ¿Cómo se usa models.py en main.py?](#📌-¿Cómo-se-usa-modelspy-en-mainpy)
-5. [Validación y gestión de Modelos](#Validación-y-gestión-de-Modelos)
-   - [📌 Configurar los modelos para crear un nuevo cliente sin ID](#📌-Configurar-los-modelos-para-crear-un-nuevo-cliente-sin-ID)
-   - [📌 Gestionar la validación y asignación de ID en el backend](#📌-Gestionar-la-validación-y-asignación-de-ID-en-el-backend)
-6. [Listar base de datos en un JSON en un endpoint](#Listar-base-de-datos-en-un-JSON-en-un-endpoint)
-   - [📌 Crear un endpoint para obtener todos los clientes](#📌-Crear-un-endpoint-para-obtener-todos-los-clientes)
-   - [📌 Ejemplo de uso con curl para agregar clientes](#📌-Ejemplo-de-uso-con-curl-para-agregar-clientes)
-   - [📌 Ejemplo de uso con curl para listar clientes](#📌-Ejemplo-de-uso-con-curl-para-listar-clientes)
-   - [📌 Obtener un cliente específico por ID](#📌-Obtener-un-cliente-específico-por-ID)
+1. [Validación de datos con Pydantic](#Validación-de-datos-con-Pydantic)
+   - [Importación de Pydantic](#Importación-de-Pydantic)
+   - [Modelo CustomerBase](#Modelo-CustomerBase)
+   - [Integrar el modelo CustomerBase al endpoint](#Integrar-el-modelo-CustomerBase-al-endpoint)
+2. [Modelado de Datos en APIs con FastAPI](#Modelado-de-Datos-en-APIs-con-FastAPI)
+   - [Script models.py](#Script-models.py)
+   - [¿Por qué usar models.py?](#¿Por-qué-usar-models.py)
+   - [Importación de Pydantic](#Importación-de-Pydantic-1)
+   - [Modelo de Datos](#Modelo-de-Datos)
+   - [Creación de Modelos Diferenciados](#Creación-de-Modelos-Diferenciados)
+3. [Creación de relaciones entre datos](#Creación-de-relaciones-entre-datos)
+   - [¿Cómo se usa models.py en main.py?](#¿Cómo-se-usa-modelspy-en-mainpy)
+4. [Validación y gestión de Modelos](#Validación-y-gestión-de-Modelos)
+   - [Configurar los modelos para crear un nuevo cliente sin ID](#Configurar-los-modelos-para-crear-un-nuevo-cliente-sin-ID)
+   - [Gestionar la validación y asignación de ID en el backend](#Gestionar-la-validación-y-asignación-de-ID-en-el-backend)
+5. [Listar base de datos en un JSON en un endpoint](#Listar-base-de-datos-en-un-JSON-en-un-endpoint)
+6. [Base de Datos y Consultas](#Base-de-Datos-y-Consultas)
+   - [Gestion de datos relacionales con SQLModel](#Gestion-de-datos-relacionales-con-SQLModel)
 
 
-## **Explicación detallada del código en FastAPI**
 
-El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
-
----
-## Validación de datos con Pydantic
+# Validación de datos con Pydantic
 Para crear un endpoint dinámico y seguro en FastAPI, es fundamental validar la información recibida, especialmente si el contenido se envía en el cuerpo de la solicitud. Los usuarios pueden ingresar datos incorrectos o no válidos, como un correo electrónico mal formateado, por lo que validar estos datos es crucial para el correcto funcionamiento de la API. 
 
 FastAPI facilita esta validación a través de **Pydantic**, una biblioteca de Python que permite construir modelos de datos robustos. A continuación, exploraremos cómo crear un modelo básico de cliente para validar datos en un endpoint.
 
-### 📌 **Importación de Pydantic**
+##  **Importación de Pydantic**
 ```python
 from pydantic import BaseModel
 ```
 - **`BaseModel`**: Clase base de Pydantic que permite definir modelos de datos con validación automática.
 
 ---
-### 📌 **Modelo CustomerBase**
+## **Modelo CustomerBase**
 ```python
 class CustomerBase(BaseModel):
     name       : str         # Nombre del cliente (obligatorio).
@@ -56,7 +47,7 @@ Este modelo define las propiedades básicas de un **Cliente** para que sean vali
 - **`name`**, **`email`** y **`age`** son obligatorios.
 - **`description`** es opcional (`None` significa que puede faltar).
 ---
-### 📌 Integrar el modelo CustomerBase al endpoint
+## Integrar el modelo CustomerBase al endpoint
 
 Una vez definido el modelo, el siguiente paso es integrarlo en un endpoint. Esto se realiza mediante una función asincrónica, por ejemplo, ``async def create_customer``, que acepta datos de tipo ``Customer`` en el cuerpo de la solicitud.
 
@@ -75,7 +66,7 @@ async def create_customer(customer_data: Customer):
 4. Finalmente, la función puede retornar los mismos datos recibidos para verificar su recepción o realizar acciones adicionales como guardar en una base de datos o enviar una notificación.
 ---
 
-## Modelado de Datos en APIs con FastAPI
+# Modelado de Datos en APIs con FastAPI
 
 Para diseñar una API robusta y eficiente, es fundamental modelar correctamente los datos. Un buen diseño de modelos no solo permite organizar y estructurar la información de manera eficiente, sino que también facilita la conexión entre distintos modelos y optimiza la funcionalidad de la API. En esta guía, exploraremos cómo crear modelos en **FastAPI** para estructurar datos, conectar modelos y mejorar la base de datos.
 
@@ -87,10 +78,12 @@ El éxito de una API depende en gran medida de cómo se modelan los datos. Defin
 
 ---
 
-### 📌 **Script models.py**
+## **Script models.py**
+
 En **FastAPI**, el archivo models.py cumple una función clave: definir la estructura de los datos que manejará la API. Estos modelos actúan como **plantillas** que permiten validar y organizar la información enviada y recibida en las solicitudes HTTP.
 
-#### **📃 ¿Por qué usar models.py?**
+## **¿Por qué usar models.py?**
+
 - 📂 **Organización del código**: Mantiene el código modular y fácil de mantener.
 - ✅ **Validación automática**: Gracias a Pydantic, se asegura que los datos cumplan con los tipos esperados.
 - 🔗 **Conexión con bases de datos**: En caso de usar SQLAlchemy, se pueden definir modelos que se convierten en tablas de la base de datos.
@@ -98,7 +91,8 @@ En **FastAPI**, el archivo models.py cumple una función clave: definir la estru
 
 ---
 
-### **📌 Importación de Pydantic**
+## **Importación de Pydantic**
+
 FastAPI utiliza Pydantic para definir modelos de datos con validación automática. Se importa BaseModel desde pydantic:
 
 `models.py`
@@ -108,7 +102,7 @@ from pydantic import BaseModel
 
 ``BaseModel`` permite crear modelos con validación integrada.
 
-### 📌 **Modelo de Datos**
+## **Modelo de Datos**
 
 Un modelo de datos define la estructura de los objetos que manejará la API. Ejemplo:
 
@@ -123,7 +117,7 @@ class Customer(BaseModel):
 - Cada atributo (id, name, email, age) tiene un tipo de dato obligatorio.
 - Si se envían datos incorrectos (por ejemplo, age="veinte" en vez de un número), FastAPI generará un error automáticamente.
 
-### 📌 **Creación de Modelos Diferenciados**
+## **Creación de Modelos Diferenciados**
 
 En algunos casos, es útil tener diferentes modelos para distintas operaciones. Por ejemplo:
 
@@ -164,7 +158,7 @@ class Customer(CustomerBase):
     id         : int | None = None  # ID opcional del cliente.
 ```
 
-## **Creación de relaciones entre datos**
+# **Creación de relaciones entre datos**
 
 Cuando se manejan relaciones entre datos (ej. clientes y facturas):
 
@@ -196,7 +190,7 @@ La propiedad ``total_amount`` **calcula automáticamente el total de las transac
 
 ---
 
-### 📌 ¿Cómo se usa models.py en main.py?
+## ¿Cómo se usa models.py en main.py?
 
 El archivo ``models.py`` no funciona solo. Se importa en ``main.py`` para definir los **endpoints** de la API:
 
@@ -233,9 +227,9 @@ async def create_customer(customer_data: Customer):
 
 ---
 
-## **Validacion y gestion de Modelos**
+# **Validacion y gestion de Modelos**
 
-### 📌 Configurar los modelos para crear un nuevo cliente sin ID
+## Configurar los modelos para crear un nuevo cliente sin ID
 
 Para evitar enviar un ID manualmente, creamos ``CustomerCreate``, que hereda de ``Customer`` pero excluye el ID, dejándolo en blanco hasta que se complete la validación. Esto es útil porque:
 
@@ -275,7 +269,7 @@ async def create_customer(customer_data: CustomerCreate):
 ```
 ---
 
-### 📌 Gestionar la validacion y asignacion de id en el backend
+## Gestionar la validacion y asignacion de id en el backend
 
 FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos:
 
@@ -371,7 +365,7 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
 
     🔹**Devuelve el cliente creado**🔹
 
-### 📌 Listar base de datos en un JSON en un endpoint
+# Listar base de datos en un JSON en un endpoint
 
 Un **endpoint** es una URL específica dentro de una API que permite a los clientes (usuarios o aplicaciones) **enviar y recibir datos** mediante **solicitudes HTTP**. 
 En **FastAPI**, los endpoints están definidos por funciones que manejan solicitudes **GET, POST, PUT, DELETE**, entre otras.
@@ -479,6 +473,13 @@ Si no hay clientes, el resultado será un **JSON vacío**: `[]`.
     - Si el cliente no existe, FastAPI devuelve un error, protegiendo la integridad de los datos.
 
 --- 
+
+# Base de Datos y Consultas
+
+Los modelos de datos en bases de datos relacionales permiten organizar y relacionar información sin duplicarla en múltiples tablas, optimizando así la gestión de datos. Al usar FastAPI y SQLModel, es posible configurar estas relaciones en los modelos que luego reflejarán las tablas en la base de datos, permitiendo un acceso eficiente y estructurado a los datos.
+
+##  Gestion de datos relacionales con SQLModel 
+
 
 
 
