@@ -2,6 +2,30 @@
 
 ## 📌 Índice
 
+# Índice
+
+1. [Explicación detallada del código en FastAPI](#explicación-detallada-del-código-en-fastapi)
+2. [Validación de datos con Pydantic](#validación-de-datos-con-pydantic)
+   - [📌 Importación de Pydantic](#📌-importación-de-pydantic)
+   - [📌 Modelo CustomerBase](#📌-modelo-customerbase)
+   - [📌 Integrar el modelo CustomerBase al endpoint](#📌-integrar-el-modelo-customerbase-al-endpoint)
+3. [Modelado de Datos en APIs con FastAPI](#modelado-de-datos-en-apis-con-fastapi)
+   - [📌 Script models.py](#📌-script-modelspy)
+   - [📃 ¿Por qué usar models.py?](#📃-¿por-qué-usar-modelspy)
+   - [📌 Importación de Pydantic](#📌-importación-de-pydantic-1)
+   - [📌 Modelo de Datos](#📌-modelo-de-datos)
+   - [📌 Creación de Modelos Diferenciados](#📌-creación-de-modelos-diferenciados)
+4. [Creación de relaciones entre datos](#creación-de-relaciones-entre-datos)
+   - [📌 ¿Cómo se usa models.py en main.py?](#📌-¿cómo-se-usa-modelspy-en-mainpy)
+5. [Validación y gestión de Modelos](#validación-y-gestión-de-modelos)
+   - [📌 Configurar los modelos para crear un nuevo cliente sin ID](#📌-configurar-los-modelos-para-crear-un-nuevo-cliente-sin-id)
+   - [📌 Gestionar la validación y asignación de ID en el backend](#📌-gestionar-la-validación-y-asignación-de-id-en-el-backend)
+6. [Listar base de datos en un JSON en un endpoint](#listar-base-de-datos-en-un-json-en-un-endpoint)
+   - [📌 Crear un endpoint para obtener todos los clientes](#📌-crear-un-endpoint-para-obtener-todos-los-clientes)
+   - [📌 Ejemplo de uso con curl para agregar clientes](#📌-ejemplo-de-uso-con-curl-para-agregar-clientes)
+   - [📌 Ejemplo de uso con curl para listar clientes](#📌-ejemplo-de-uso-con-curl-para-listar-clientes)
+   - [📌 Obtener un cliente específico por ID](#📌-obtener-un-cliente-específico-por-id)
+
 
 ## **Explicación detallada del código en FastAPI**
 
