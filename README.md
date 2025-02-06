@@ -342,9 +342,12 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
                 return customer
                 ```
 
-        🔹**Devuelve el cliente creado**🔹
+    🔹**Devuelve el cliente creado**🔹
 
 ### 📌 Listar base de datos en un JSON en un endpoint
+
+Un **endpoint** es una URL específica dentro de una API que permite a los clientes (usuarios o aplicaciones) **enviar y recibir datos** mediante **solicitudes HTTP**. 
+En **FastAPI**, los endpoints están definidos por funciones que manejan solicitudes **GET, POST, PUT, DELETE**, entre otras.
 
 Se crea un nuevo endpoint que va a ser del tipo `get`.
 
@@ -365,11 +368,17 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
     async def list_customer():
         return db_customers
     ```
-    🔹 **Explicación:**:
+    🔹 **Explicación:**
     1.  `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
     2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
     3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
     4. `return db_customers` → Devuelve la lista de clientes almacenados.
+
+    🔹 **¿Cómo funciona este endpoint?**
+    1. Se accede con **POST** en **`/customers`**.
+    2. Recibe datos en formato **JSON** con la estructura de `CustomerCreate`.
+    3. Se valida y almacena el cliente en la base de datos en memoria.
+    4. Devuelve el cliente creado.
 
 **FastAPI convierte automáticamente la lista de Customer a un JSON, haciéndola accesible desde la documentación.**
 
