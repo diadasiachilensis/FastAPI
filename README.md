@@ -209,7 +209,6 @@ async def create_customer(customer_data: Customer):
 
 ---
 
-
 ## **Validacion y gestion de Modelos**
 
 ### 📌 Configurar los modelos para crear un nuevo cliente sin ID
@@ -343,7 +342,7 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
                 return customer
                 ```
 
-        **Devuelve el cliente creado**
+        🔹**Devuelve el cliente creado**🔹
 
 ### 📌 Listar base de datos en un JSON en un endpoint
 
@@ -366,7 +365,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
     async def list_customer():
         return db_customers
     ```
-        🔹 **Explicación:**
+    🔹 **Explicación:**
             1. `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
             2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
             3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
