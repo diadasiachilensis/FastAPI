@@ -4,6 +4,7 @@
 
 
 ## **Explicación detallada del código en FastAPI**
+
 El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
 
 ---
@@ -42,8 +43,11 @@ async def create_customer(customer_data: Customer):
 ```
 
 1. Se define el endpoint con el método `post`, para la creacion las APIRest necesitan el metodo ``post``.
+
 2. Se registran los datos del cliente con el decorador ``@app.post("/customers")``.
+
 3. En el cuerpo de la solicitud, los datos enviados serán automáticamente validados según el esquema de `Customer`.
+
 4. Finalmente, la función puede retornar los mismos datos recibidos para verificar su recepción o realizar acciones adicionales como guardar en una base de datos o enviar una notificación.
 ---
 
@@ -62,17 +66,18 @@ El éxito de una API depende en gran medida de cómo se modelan los datos. Defin
 ### 📌 **Script models.py**
 En **FastAPI**, el archivo models.py cumple una función clave: definir la estructura de los datos que manejará la API. Estos modelos actúan como **plantillas** que permiten validar y organizar la información enviada y recibida en las solicitudes HTTP.
 
-#### **📌 ¿Por qué usar models.py?**
-📂 Organización del código: Mantiene el código modular y fácil de mantener.
-✅ Validación automática: Gracias a Pydantic, se asegura que los datos cumplan con los tipos esperados.
-🔗 Conexión con bases de datos: En caso de usar SQLAlchemy, se pueden definir modelos que se convierten en tablas de la base de datos.
-🔄 Serialización y deserialización: Convierte datos entre formatos JSON ↔ Python de manera automática.
+#### **📃 ¿Por qué usar models.py?**
+- 📂 **Organización del código**: Mantiene el código modular y fácil de mantener.
+- ✅ **Validación automática**: Gracias a Pydantic, se asegura que los datos cumplan con los tipos esperados.
+- 🔗 **Conexión con bases de datos**: En caso de usar SQLAlchemy, se pueden definir modelos que se convierten en tablas de la base de datos.
+- 🔄 **Serialización y deserialización**: Convierte datos entre formatos JSON ↔ Python de manera automática.
 
 ---
 
 ### **📌 Importación de Pydantic**
 FastAPI utiliza Pydantic para definir modelos de datos con validación automática. Se importa BaseModel desde pydantic:
 
+`models.py`
 ```python
 from pydantic import BaseModel
 ```
@@ -83,6 +88,7 @@ from pydantic import BaseModel
 
 Un modelo de datos define la estructura de los objetos que manejará la API. Ejemplo:
 
+`models.py`
 ```python
 class Customer(BaseModel):
     id: int
@@ -97,6 +103,7 @@ class Customer(BaseModel):
 
 En algunos casos, es útil tener diferentes modelos para distintas operaciones. Por ejemplo:
 
+`models.py`
 ```python
 # No agrega nuevos atributos, solo reutiliza la estructura.
 class CustomerCreate(CustomerBase):
@@ -106,16 +113,38 @@ class CustomerCreate(CustomerBase):
 class Customer(CustomerBase):
     id: int  # Se añade un ID solo cuando el cliente ya existe
 ```
-***Diferencias entre modelos:***
+**Diferencias entre modelos:**
 
 1. ``CustomerBase``: Modelo base con los datos esenciales.
 2. ``CustomerCreate``: Se usa al crear un cliente (sin id).
 3. ``Customer``: Representa un cliente ya almacenado (incluye id).
 
-### 📌 **Creación de relacioens entre datos**
+Mejor explicado queda de la siguiente manera: 
+
+`models.py`
+```python
+# Definimos una clase base para los clientes.
+class CustomerBase(BaseModel): #heredar BaseModel para agregar campos que sean validos sin necesidad de hacer algun otro metodo para crear estas validaciones.
+    name       : str  # Nombre del cliente.
+    description: str | None  # Descripción opcional.
+    email      : str  # Correo electrónico.
+    age        : int  # Edad.
+
+# `CustomerCreate` hereda de `CustomerBase`, por lo que tiene los mismos atributos.
+class CustomerCreate(CustomerBase):
+    pass  # No agrega nuevos atributos, solo reutiliza la estructura.
+
+# `Customer` extiende `CustomerBase` e incluye un ID opcional.
+class Customer(CustomerBase):
+    id         : int | None = None  # ID opcional del cliente.
+    id         : int | None = None  # ID opcional del cliente.
+```
+
+## **Creación de relaciones entre datos**
 
 Cuando se manejan relaciones entre datos (ej. clientes y facturas):
 
+`models.py`
 ```python
 # Definimos la estructura de una transacción.
 class Transaction(BaseModel):
@@ -134,6 +163,7 @@ class Invoice(BaseModel):
     def ammount_total(self):
         return sum(transaction.ammount for transaction in self.transactions)
 ```
+
 **Explicación**:
 
 ``Invoice`` tiene un campo ``customer``, que es un objeto ``Customer``.
@@ -141,8 +171,184 @@ class Invoice(BaseModel):
 La propiedad ``total_amount`` **calcula automáticamente el total de las transaccione**s.
 
 ---
+
+### 📌 ¿Cómo se usa models.py en main.py?
+
+El archivo ``models.py`` no funciona solo. Se importa en ``main.py`` para definir los **endpoints** de la API:
+
+``main.py``
+```python
+
+# Importamos FastAPI para construir la API.
+from fastapi import FastAPI
+# Importamos los modelos definidos en models.py
+from models import Customer, CustomerCreate
+
+# Creamos una instancia de la aplicación FastAPI
+app = FastAPI()
+
+# Base de datos simulada como una lista en memoria para almacenar clientes.
+db_customers: list[Customer] = []  # Simulación de base de datos en memoria
+
+# Endpoint para crear un nuevo cliente.
+# - `@app.post("/customers")` indica que se accede mediante una solicitud POST a "/customers".
+# - `response_model=Customer` define que la respuesta tendrá la estructura del modelo Customer.
+@app.post("/customers", response_model=Customer)
+async def create_customer(customer_data: Customer):
+    # Se valida y convierte la entrada (customer_data) en un objeto de tipo Customer.
+    customer = Customer(**customer_data.dict(), id=len(db_customers))
+    # Se guarda el cliente en la lista simulada de clientes.
+    db_customers.append(customer)
+    # Se retorna el cliente creado.
+    return customer
+```
+**📌 ¿Qué pasa aquí?**
+
+- Se recibe un objeto Customer, se convierte en Customer y se guarda en una lista.
+- La API devuelve el cliente creado en formato JSON.
+
 ---
----
+--- 
+
+## **Validacion y gestion de Modelos**
+
+### 📌 Configurar los modelos para crear un nuevo cliente sin ID
+
+Para evitar enviar un ID manualmente, creamos ``CustomerCreate``, que hereda de ``Customer`` pero excluye el ID, dejándolo en blanco hasta que se complete la validación. Esto es útil porque:
+
+- El ID se asigna automáticamente en la base de datos o mediante código en memoria.
+- Evitamos exposición de datos sensibles innecesarios en las solicitudes.
+
+`models.py`
+```python
+# Definimos una clase base para los clientes.
+class CustomerBase(BaseModel): #heredar BaseModel para agregar campos que sean validos sin necesidad de hacer algun otro metodo para crear estas validaciones.
+    name       : str  # Nombre del cliente.
+    description: str | None  # Descripción opcional.
+    email      : str  # Correo electrónico.
+    age        : int  # Edad.
+
+# `CustomerCreate` hereda de `CustomerBase`, por lo que tiene los mismos atributos.
+class CustomerCreate(CustomerBase):
+    pass  # No agrega nuevos atributos, solo reutiliza la estructura.
+
+# `Customer` extiende `CustomerBase` e incluye un ID opcional.
+class Customer(CustomerBase):
+    id         : int | None = None  # ID opcional del cliente.
+    id         : int | None = None  # ID opcional del cliente.
+```
+
+Ahora el endpoint de ``Customer`` tiene el id, se debe cambiar por el ``CustomerCreate`` 
+
+``main.py``
+```python
+# Importamos los modelos definidos en models.py
+from models import Customer, Transaction, Invoice, CustomerCreate
+
+# Endpoint para crear un nuevo cliente.
+@app.post("/customers", response_model=Customer) #responder con un modelo que tenga el id
+async def create_customer(customer_data: CustomerCreate): 
+    return customer_data
+```
+
+### 📌 Gestionar la validacion y asignacion de id en el backend
+
+FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos:
+
+1. Se usa una variable ``current_id`` inicializada en 0 que se incrementa por cada nuevo registro.
+
+    ``main.py``
+    ```python
+    current_id: int = 0 
+    ```
+<br/>
+
+2. Los datos recibidos son validados y convertidos a diccionario ``(model.dict())``, creando una entrada limpia y sin errores.
+
+    - Devuelve un diccionario con todos los datos que esta ingresando el usuario. queda definida como ``customer`` si la validacion no es exitosa, FastAPI devuelve un error 
+
+    ``main.py``
+    ```python
+    # Endpoint para crear un nuevo cliente.
+    @app.post("/customers", response_model=Customer) #responder con un modelo que tenga el id
+    async def create_customer(customer_data: CustomerCreate): 
+    # Se valida y convierte la entrada (customer_data) en un objeto de tipo Customer.
+    customer = Customer.model_validate(customer_data.model_dump())
+    ``` 
+    <br/>
+3.  En un entorno asincrónico, no se recomienda incrementar ``current_id`` de forma manual, por lo que una lista simula la base de datos en memoria, donde el ID es el índice del elemento.
+
+    ``main.py``
+    ```python
+    # Endpoint para crear un nuevo cliente.
+    @app.post("/customers", response_model=Customer) #responder con un modelo que tenga el id
+    async def create_customer(customer_data: CustomerCreate): 
+    # Se valida y convierte la entrada (customer_data) en un objeto de tipo Customer.
+    customer = Customer.model_validate(customer_data.model_dump())
+    #Asumiendo que hace base de datos
+    customer.id = current_id +1 
+    ```
+    <br/>
+
+    ``customer.id = current_id +1`` esto no resulta en un entorno asincrónico.
+    <br/>
+    - Para obtener el id debemos saber cuantos elementos estan en la lista
+
+        1. Tenemos una lista que se asume que es nuestra base de datos ```db_customers```, pero queda en memoria, osea si se apaga el servidor se borran los datos. 
+
+            ``main.py``
+            ```python
+            db_customers: list[Customer] = [] #tenemos una lista vacia 
+            ``` 
+
+        2. Se recibe un ``customer_data`` del ``CustomerCreate`` del que no tiene el id. 
+            
+            ``main.py``
+            ```python
+            async def create_customer(customer_data: CustomerCreate): 
+            ```
+        3. Se valida con la clase `Customer` 
+            
+            ``main.py``
+            ```python
+            customer = Customer.model_validate(customer_data.model_dump())
+            ```
+        4. Luego, se cuentan cuantos elementos hay en la lista `db_customers` y se asgina como el id del customer
+            
+            ``main.py``
+            ```python
+            customer.id = len(db_customers)
+            ```
+        
+        5. Al final, se agrega el customer a la lista y retorna el customer para que el usuario lo pueda ver
+            
+            ``main.py``
+            ```python
+            db_customers.append(customer)
+            return customer
+            ```
+
+--- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------
+-------------
+-------------
 
 ### 📌 **Modelo `Transaction`**
 ```python

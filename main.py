@@ -15,6 +15,8 @@ async def root():
 # Base de datos simulada como una lista en memoria para almacenar clientes.
 db_customers: list[Customer] = []
 
+
+
 # Endpoint para crear un nuevo cliente.
 # - `@app.post("/customers")` indica que se accede mediante una solicitud POST a "/customers".
 # - `response_model=Customer` define que la respuesta tendrá la estructura del modelo Customer.
@@ -22,7 +24,6 @@ db_customers: list[Customer] = []
 async def create_customer(customer_data: CustomerCreate): 
     # Se valida y convierte la entrada (customer_data) en un objeto de tipo Customer.
     customer = Customer.model_validate(customer_data.model_dump())
-
     # Se asigna un ID al cliente (simulando una base de datos, usando el tamaño de la lista actual).
     customer.id = len(db_customers)
 
