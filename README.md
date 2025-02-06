@@ -306,13 +306,16 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
         2. **Crear un Cliente (POST `/customers`)**
             - Se recibe un ``customer_data`` del ``CustomerCreate`` del que no tiene el id. 
                 - **`customer_data: CustomerCreate`** → Recibe datos con el modelo `CustomerCreate`:
+                - FastAPI usa **tipado fuerte** para validar automáticamente los datos.
+                - **`customer_data`** debe tener la estructura del modelo `CustomerCreate`. Si falta algún dato obligatorio, **FastAPI devolverá un error automático**.
 
                     ``main.py``
         
                     ```python
                     @app.post("/customers", response_model=Customer)
                     async def create_customer(customer_data: CustomerCreate): 
-                    ```         
+                    ```
+      
 
         3. Se valida con la clase `Customer` 
             - Convierte los datos en una instancia válida de `Customer`
@@ -382,6 +385,63 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 
 **FastAPI convierte automáticamente la lista de Customer a un JSON, haciéndola accesible desde la documentación.**
 
+**Ejemplo de Uso con curl**
+    Para **crear un nuevo cliente**, usa:
+
+    ```sh
+    curl -X 'POST' 'http://127.0.0.1:8000/customers' \
+        -H 'Content-Type: application/json' \
+        -d '{
+            "name": "Carlos Gómez",
+            "description": "Nuevo cliente",
+            "email": "carlos@example.com",
+            "age": 40
+            }'
+    ```
+
+🔹**Salida esperada:**
+
+    ```json
+    {
+        "id": 2,
+        "name": "Carlos Gómez",
+        "description": "Nuevo cliente",
+        "email": "carlos@example.com",
+        "age": 40
+    }
+    ```
+
+**Ejemplo de Uso en `curl`**
+    Si quieres obtener la lista de clientes desde la terminal, puedes usar:
+
+    ```sh
+    curl -X 'GET' 'http://127.0.0.1:8000/customers' -H 'accept: application/json'
+    ```
+
+🔹 **Salida esperada (si hay clientes en la base de datos simulada)**:
+
+    ```json
+    [
+        {
+            "id": 0,
+            "name": "Juan Pérez",
+            "description": "Cliente VIP",
+            "email": "juan@example.com",
+            "age": 35
+        },
+        {
+            "id": 1,
+            "name": "María López",
+            "description": "Cliente regular",
+            "email": "maria@example.com",
+            "age": 29
+        }
+    ]
+    ```
+
+Si no hay clientes, el resultado será un **JSON vacío**: `[]`.
+
+
 - **¿Qué ocurre al crear un nuevo cliente en memoria?**
     Dado que estamos trabajando en memoria:
 
@@ -440,6 +500,7 @@ class Invoice(BaseModel):
     def ammount_total(self):
         return sum(transaction.ammount for transaction in self.transactions)
 ```
+
 - **`id`**: Identificador de la factura.
 - **`customer`**: Cliente que generó la factura.
 - **`transactions`**: Lista de transacciones asociadas.
@@ -466,53 +527,6 @@ app = FastAPI()
 ```
 - `FastAPI()` crea una instancia de la aplicación, necesaria para definir rutas y manejar solicitudes.
 
----
-
-### 📌 **Ruta raíz (GET)**
-```python
-@app.get("/")
-async def root():
-    return {"message": "Hola, Mundo!"}
-```
-- Define un endpoint en `/` que responde con `{"message": "Hola, Mundo!"}` cuando se accede con un **GET**.
-- `async def` indica que la función es asíncrona, lo que permite manejar solicitudes de forma eficiente.
-
----
-
-### 📌 **Base de datos simulada**
-```python
-db_customers: list[Customer] = []
-```
-- Se crea una **lista en memoria** para almacenar clientes. En un sistema real, esto debería ser una base de datos.
-
----
-
-### 📌 **Crear un Cliente (POST `/customers`)**
-```python
-@app.post("/customers", response_model=Customer)
-async def create_customer(customer_data: CustomerCreate):
-    customer = Customer.model_validate(customer_data.model_dump())
-    customer.id = len(db_customers)  # Se asigna un ID basado en la cantidad de clientes.
-    db_customers.append(customer)  # Se agrega el cliente a la lista.
-    return customer  # Se devuelve el cliente creado.
-```
-1. **`customer_data: CustomerCreate`** → Recibe datos con el modelo `CustomerCreate`.
-2. **`model_validate(customer_data.model_dump())`** → Convierte los datos en una instancia válida de `Customer`.
-3. **`customer.id = len(db_customers)`** → Asigna un ID único.
-4. **`db_customers.append(customer)`** → Guarda el cliente en la lista.
-5. **Devuelve el cliente creado**.
-
----
-
-### 📌 **Listar Clientes (GET `/customers`)**
-```python
-@app.get("/customers", response_model=list[Customer])
-async def list_customer():
-    return db_customers
-```
-- Devuelve la lista de clientes registrados.
-
----
 
 ### 📌 **Crear una Transacción (POST `/transactions`)**
 ```python
@@ -536,136 +550,3 @@ async def create_invoices(invoice_data: Invoice):
 
 ---
 
-## **4. Conceptos Clave de FastAPI**
-### ✅ **1. Endpoints y Métodos HTTP**
-FastAPI usa **decoradores** para definir endpoints:
-- `@app.get("/ruta")` → Maneja solicitudes **GET**.
-- `@app.post("/ruta")` → Maneja solicitudes **POST**.
-- `@app.put("/ruta")` → Maneja solicitudes **PUT** (actualizar datos).
-- `@app.delete("/ruta")` → Maneja solicitudes **DELETE** (eliminar datos).
-
----
-
-### ✅ **2. Tipado Estricto y Validación con Pydantic**
-FastAPI usa **tipado fuerte** para validar automáticamente los datos.
-Ejemplo:
-```python
-async def create_customer(customer_data: CustomerCreate):
-``` 
-- **`customer_data`** debe tener la estructura del modelo `CustomerCreate`. Si falta algún dato obligatorio, **FastAPI devolverá un error automático**.
-
----
-
-### ✅ **3. Asincronía (async/await)**
-- **FastAPI soporta asincronía con `async def`**, lo que permite manejar muchas solicitudes sin bloquear la aplicación.
-- Es útil en aplicaciones con muchas conexiones simultáneas (como APIs web de alto tráfico).
-
----
-## **¿Qué son los Endpoints?**
-Un **endpoint** es una URL específica dentro de una API que permite a los clientes (usuarios o aplicaciones) **enviar y recibir datos** mediante **solicitudes HTTP**. 
-
-En **FastAPI**, los endpoints están definidos por funciones que manejan solicitudes **GET, POST, PUT, DELETE**, entre otras.
-
-### 📌 **Ejemplo de un Endpoint en FastAPI**
-En tu script `main.py`, tienes el siguiente endpoint:
-
-```python
-@app.get("/customers", response_model=list[Customer])
-async def list_customer():
-    return db_customers
-```
-
-🔹 **Explicación:**
-1. `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
-2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
-3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
-4. `return db_customers` → Devuelve la lista de clientes almacenados.
-
-### 📌 **¿Cómo funciona este endpoint en la práctica?**
-- Un usuario o una aplicación puede hacer una **solicitud GET** a **`/customers`**.
-- La API responderá con una lista de clientes en formato **JSON**.
-
----
-
-## **Ejemplo de Uso en `curl`**
-Si quieres obtener la lista de clientes desde la terminal, puedes usar:
-
-```sh
-curl -X 'GET' 'http://127.0.0.1:8000/customers' -H 'accept: application/json'
-```
-
-🔹 **Salida esperada (si hay clientes en la base de datos simulada)**:
-```json
-[
-    {
-        "id": 0,
-        "name": "Juan Pérez",
-        "description": "Cliente VIP",
-        "email": "juan@example.com",
-        "age": 35
-    },
-    {
-        "id": 1,
-        "name": "María López",
-        "description": "Cliente regular",
-        "email": "maria@example.com",
-        "age": 29
-    }
-]
-```
-
-Si no hay clientes, el resultado será un **JSON vacío**: `[]`.
-
----
-
-## **Ejemplo de Endpoint con Método POST**
-Otro ejemplo en `main.py` es el endpoint para **crear clientes**:
-
-```python
-@app.post("/customers", response_model=Customer)
-async def create_customer(customer_data: CustomerCreate):
-    customer = Customer.model_validate(customer_data.model_dump())  # Convierte los datos a un objeto Customer
-    customer.id = len(db_customers)  # Asigna un ID único
-    db_customers.append(customer)  # Guarda el cliente en la lista simulada
-    return customer  # Devuelve el cliente creado
-```
-
-🔹 **¿Cómo funciona este endpoint?**
-1. Se accede con **POST** en **`/customers`**.
-2. Recibe datos en formato **JSON** con la estructura de `CustomerCreate`.
-3. Se valida y almacena el cliente en la base de datos en memoria.
-4. Devuelve el cliente creado.
-
----
-
-## **Ejemplo de Uso con curl**
-Para **crear un nuevo cliente**, usa:
-
-```sh
-curl -X 'POST' 'http://127.0.0.1:8000/customers' \
-     -H 'Content-Type: application/json' \
-     -d '{
-           "name": "Carlos Gómez",
-           "description": "Nuevo cliente",
-           "email": "carlos@example.com",
-           "age": 40
-         }'
-```
-
-🔹 **Salida esperada:**
-```json
-{
-    "id": 2,
-    "name": "Carlos Gómez",
-    "description": "Nuevo cliente",
-    "email": "carlos@example.com",
-    "age": 40
-}
-```
----
-
-## **Sintesis**
-- Un **endpoint** es una dirección en la API que maneja solicitudes HTTP específicas.
-- FastAPI usa **decoradores** (`@app.get()`, `@app.post()`, etc.) para definir endpoints.
-- Puedes probarlos con herramientas como `curl` o Postman.
-- `GET` sirve para **obtener** datos, `POST` para **enviar** datos, entre otros.
