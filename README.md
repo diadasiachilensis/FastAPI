@@ -208,7 +208,7 @@ async def create_customer(customer_data: Customer):
 - La API devuelve el cliente creado en formato JSON.
 
 ---
---- 
+
 
 ## **Validacion y gestion de Modelos**
 
@@ -250,6 +250,7 @@ from models import Customer, Transaction, Invoice, CustomerCreate
 async def create_customer(customer_data: CustomerCreate): 
     return customer_data
 ```
+---
 
 ### 📌 Gestionar la validacion y asignacion de id en el backend
 
@@ -327,6 +328,39 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
             db_customers.append(customer)
             return customer
             ```
+
+### 📌 Listar base de datos en un JSON
+
+Se crea un nuevo endpoint que va a ser del tipo `get`.
+
+1. Una funcion que retorna la basee de datos la cual es una lista
+
+    ```python
+    @app.get("/customers")
+    async def list_customer():
+        return db_customers
+    ```
+2. En un listado se debe definir el `response_model=list[Customer]` para mostrar el JSON con los clientes. 
+
+    ```python
+    @app.get("/customers",response_model=list[Customer])
+    async def list_customer():
+        return db_customers
+    ```
+
+**FastAPI convierte automáticamente la lista de Customer a un JSON, haciéndola accesible desde la documentación.**
+
+- **¿Qué ocurre al crear un nuevo cliente en memoria?**
+    Dado que estamos trabajando en memoria:
+
+    - Los datos se borran al reiniciar el servidor.
+        Para cada cliente creado, asignamos un ID basado en el índice de la lista, simulando el autoincremento de una base de datos real.
+
+- **¿Cómo crear un endpoint para obtener un cliente específico por ID?**
+    Finalmente, para acceder a un cliente específico, añadimos un nuevo endpoint que recibe el ID en la URL:
+
+    - Este endpoint busca en la lista por ID y devuelve el cliente en formato JSON.
+    - Si el cliente no existe, FastAPI devuelve un error, protegiendo la integridad de los datos.
 
 --- 
 
