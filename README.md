@@ -299,10 +299,10 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
             - Se crea una **lista en memoria** para almacenar clientes. En un sistema real, esto debería ser una base de datos.
             - Tenemos una lista que se asume que es nuestra base de datos ```db_customers```, pero queda en memoria, osea si se apaga el servidor se borran los datos. 
 
-            ``main.py``
-            ```python
-            db_customers: list[Customer] = [] #tenemos una lista vacia 
-            ``` 
+                ``main.py``
+                ```python
+                db_customers: list[Customer] = [] #tenemos una lista vacia 
+                ``` 
 
         2. **Crear un Cliente (POST `/customers`)**
             - Se recibe un ``customer_data`` del ``CustomerCreate`` del que no tiene el id. 
@@ -327,27 +327,30 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
         4. Asigna un ID único
             - Luego, se cuentan cuantos elementos hay en la lista `db_customers` y se asgina como el id del customer
             
-            ``main.py``
+                ``main.py``
 
-            ```python            
-            customer.id = len(db_customers)
-            ```
+                ```python            
+                customer.id = len(db_customers)
+                ```
         
         5. Guarda el cliente en la lista
             - Al final, se agrega el customer a la lista y retorna el customer para que el usuario lo pueda ver
-            
-            ``main.py``
 
-            ```python
-            db_customers.append(customer)
-            return customer
-            ```
+                ``main.py``
+
+                ```python
+                db_customers.append(customer)
+                return customer
+                ```
 
         **Devuelve el cliente creado**
 
-### 📌 Listar base de datos en un JSON
+### 📌 Listar base de datos en un JSON en un endpoint
 
 Se crea un nuevo endpoint que va a ser del tipo `get`.
+
+- Un usuario o una aplicación puede hacer una **solicitud GET** a **`/customers`**.
+- La API responderá con una lista de clientes en formato **JSON**.
 
 1. Una funcion que retorna la basee de datos la cual es una lista
 
@@ -363,6 +366,11 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
     async def list_customer():
         return db_customers
     ```
+        🔹 **Explicación:**
+            1. `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
+            2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
+            3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
+            4. `return db_customers` → Devuelve la lista de clientes almacenados.
 
 **FastAPI convierte automáticamente la lista de Customer a un JSON, haciéndola accesible desde la documentación.**
 
