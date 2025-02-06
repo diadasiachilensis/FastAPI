@@ -388,7 +388,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 **Ejemplo de Uso con curl**
     Para **crear un nuevo cliente**, usa:
 
-    ```sh
+    ```bash
     curl -X 'POST' 'http://127.0.0.1:8000/customers' \
         -H 'Content-Type: application/json' \
         -d '{
@@ -401,7 +401,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 
 🔹**Salida esperada:**
 
-    ```json
+    ```javascript
     {
         "id": 2,
         "name": "Carlos Gómez",
@@ -414,13 +414,13 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 **Ejemplo de Uso en `curl`**
     Si quieres obtener la lista de clientes desde la terminal, puedes usar:
 
-    ```sh
+    ```bash
     curl -X 'GET' 'http://127.0.0.1:8000/customers' -H 'accept: application/json'
     ```
 
 🔹 **Salida esperada (si hay clientes en la base de datos simulada)**:
 
-    ```json
+    ```javascript
     [
         {
             "id": 0,
