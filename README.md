@@ -365,11 +365,11 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
     async def list_customer():
         return db_customers
     ```
-    🔹 **Explicación:**
-            1. `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
-            2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
-            3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
-            4. `return db_customers` → Devuelve la lista de clientes almacenados.
+    🔹 **Explicación:**:
+    1.  `@app.get("/customers")` → Define un endpoint que responde a solicitudes **GET** en la ruta **`/customers`**.
+    2. `response_model=list[Customer]` → Indica que la respuesta será una **lista de objetos `Customer`**.
+    3. `async def list_customer():` → Es una función asíncrona que maneja la solicitud.
+    4. `return db_customers` → Devuelve la lista de clientes almacenados.
 
 **FastAPI convierte automáticamente la lista de Customer a un JSON, haciéndola accesible desde la documentación.**
 
