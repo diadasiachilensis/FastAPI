@@ -1,32 +1,7 @@
 # Documentación de la API - FastAPI
 
 ## 📌 Índice
-1. [Explicación detallada del código en FastAPI](#explicación-detallada-del-código-en-fastapi)
-2. [Validación de datos con Pydantic](#Validación-de-datos-con-Pydantic)
-   - [📌 Importación de Pydantic](#📌-importación-de-pydantic)
-   - [📌 Modelo `CustomerBase`](#📌-Modelo-CustomerBase)
-   - [📌 Modelo `CustomerCreate`](#📌-modelo-customercreate)
-   - [📌 Modelo `Customer`](#📌-modelo-customer)
-   - [📌 Modelo `Transaction`](#📌-modelo-transaction)
-   - [📌 Modelo `Invoice` (Factura)](#📌-modelo-invoice-factura)
-4. [3. Explicación de `main.py` (Rutas de la API)](#3-explicación-de-mainpy-rutas-de-la-api)
-   - [📌 Importaciones](#📌-importaciones)
-   - [📌 Instancia de FastAPI](#📌-instancia-de-fastapi)
-   - [📌 Ruta raíz (`GET /`)](#📌-ruta-raíz-get-)
-   - [📌 Base de datos simulada](#📌-base-de-datos-simulada)
-   - [📌 Crear un Cliente (`POST /customers`)](#📌-crear-un-cliente-post-customers)
-   - [📌 Listar Clientes (`GET /customers`)](#📌-listar-clientes-get-customers)
-   - [📌 Crear una Transacción (`POST /transactions`)](#📌-crear-una-transacción-post-transactions)
-   - [📌 Crear una Factura (`POST /invoices`)](#📌-crear-una-factura-post-invoices)
-5. [4. Conceptos Clave de FastAPI](#4-conceptos-clave-de-fastapi)
-   - [✅ 1. Endpoints y Métodos HTTP](#✅-1-endpoints-y-métodos-http)
-   - [✅ 2. Tipado Estricto y Validación con Pydantic](#✅-2-tipado-estricto-y-validación-con-pydantic)
-   - [✅ 3. Asincronía (`async/await`)](#✅-3-asincronía-asyncawait)
-6. [5. ¿Qué son los Endpoints?](#¿Qué-son-los-Endpoints?)
-   - [📌 Ejemplo de un Endpoint en FastAPI](#📌-Ejemplo-de-un-Endpoint-en-Fastapi) 
-   - [📌 Ejemplo de Uso en `curl`](#📌-ejemplo-de-uso-en-curl)
-   - [📌 Ejemplo de Endpoint con Método POST](#📌-ejemplo-de-endpoint-con-método-post)
-7. [6. Ejemplo de Uso con `curl`](#6-ejemplo-de-uso-con-curl)
+
 
 ## **Explicación detallada del código en FastAPI**
 El código define una API con **FastAPI**, que permite manejar clientes, transacciones e invoices (facturas). Vamos a analizarlo en detalle dividiendo la explicación en **estructura del código**, **funcionalidad de cada parte**, y **conceptos clave de FastAPI**.
@@ -84,23 +59,89 @@ El éxito de una API depende en gran medida de cómo se modelan los datos. Defin
 
 ---
 
-### 📌 **Modelo `CustomerCreate`**
-```python
-class CustomerCreate(CustomerBase):
-    pass
-```
-- Hereda de `CustomerBase`, lo que significa que tiene los mismos atributos.
-- No agrega nuevos atributos, se usa para diferenciar la creación de clientes en la API.
+### 📌 **Script models.py**
+En **FastAPI**, el archivo models.py cumple una función clave: definir la estructura de los datos que manejará la API. Estos modelos actúan como **plantillas** que permiten validar y organizar la información enviada y recibida en las solicitudes HTTP.
+
+#### **📌 ¿Por qué usar models.py?**
+📂 Organización del código: Mantiene el código modular y fácil de mantener.
+✅ Validación automática: Gracias a Pydantic, se asegura que los datos cumplan con los tipos esperados.
+🔗 Conexión con bases de datos: En caso de usar SQLAlchemy, se pueden definir modelos que se convierten en tablas de la base de datos.
+🔄 Serialización y deserialización: Convierte datos entre formatos JSON ↔ Python de manera automática.
 
 ---
 
-### 📌 **Modelo `Customer`**
-```python
-class Customer(CustomerBase):
-    id: int | None = None  # ID opcional, se asignará al crearlo.
-```
-- Extiende `CustomerBase` añadiendo un atributo `id`, que se asignará automáticamente cuando se registre un cliente.
+### **📌 Importación de Pydantic**
+FastAPI utiliza Pydantic para definir modelos de datos con validación automática. Se importa BaseModel desde pydantic:
 
+```python
+from pydantic import BaseModel
+```
+
+``BaseModel`` permite crear modelos con validación integrada.
+
+### 📌 **Modelo de Datos**
+
+Un modelo de datos define la estructura de los objetos que manejará la API. Ejemplo:
+
+```python
+class Customer(BaseModel):
+    id: int
+    name: str
+    email: str
+    age: int
+```
+- Cada atributo (id, name, email, age) tiene un tipo de dato obligatorio.
+- Si se envían datos incorrectos (por ejemplo, age="veinte" en vez de un número), FastAPI generará un error automáticamente.
+
+### 📌 **Creación de Modelos Diferenciados**
+
+En algunos casos, es útil tener diferentes modelos para distintas operaciones. Por ejemplo:
+
+```python
+# No agrega nuevos atributos, solo reutiliza la estructura.
+class CustomerCreate(CustomerBase):
+    pass  # Se usa al crear un cliente
+
+# `Customer` extiende `CustomerBase` e incluye un ID opcional.
+class Customer(CustomerBase):
+    id: int  # Se añade un ID solo cuando el cliente ya existe
+```
+***Diferencias entre modelos:***
+
+1. ``CustomerBase``: Modelo base con los datos esenciales.
+2. ``CustomerCreate``: Se usa al crear un cliente (sin id).
+3. ``Customer``: Representa un cliente ya almacenado (incluye id).
+
+### 📌 **Creación de relacioens entre datos**
+
+Cuando se manejan relaciones entre datos (ej. clientes y facturas):
+
+```python
+# Definimos la estructura de una transacción.
+class Transaction(BaseModel):
+    id         : int  # Identificador único de la transacción.
+    ammount    : int  # Monto de la transacción.
+    description: str | None  # Descripción opcional con |.
+
+# Definimos la estructura de una factura (Invoice).
+class Invoice(BaseModel):
+    id          : int  # Identificador único de la factura.
+    customer    : Customer  # Cliente asociado a la factura.
+    transactions: list[Transaction]  # Lista de transacciones en la factura.
+
+    # Propiedad para calcular el monto total de la factura sumando los montos de todas las transacciones.
+    @property
+    def ammount_total(self):
+        return sum(transaction.ammount for transaction in self.transactions)
+```
+**Explicación**:
+
+``Invoice`` tiene un campo ``customer``, que es un objeto ``Customer``.
+``transactions`` es una lista de objetos ``Transaction``.
+La propiedad ``total_amount`` **calcula automáticamente el total de las transaccione**s.
+
+---
+---
 ---
 
 ### 📌 **Modelo `Transaction`**

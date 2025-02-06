@@ -15,6 +15,7 @@ class CustomerCreate(CustomerBase):
 # `Customer` extiende `CustomerBase` e incluye un ID opcional.
 class Customer(CustomerBase):
     id         : int | None = None  # ID opcional del cliente.
+    id         : int | None = None  # ID opcional del cliente.
 
 # Definimos la estructura de una transacción.
 class Transaction(BaseModel):
