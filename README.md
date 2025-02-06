@@ -295,39 +295,55 @@ FastAPI permite validar datos mediante modelos y gestionar IDs sin base de datos
     <br/>
     - Para obtener el id debemos saber cuantos elementos estan en la lista
 
-        1. Tenemos una lista que se asume que es nuestra base de datos ```db_customers```, pero queda en memoria, osea si se apaga el servidor se borran los datos. 
+        1. **Base de datos simulada**
+            - Se crea una **lista en memoria** para almacenar clientes. En un sistema real, esto debería ser una base de datos.
+            - Tenemos una lista que se asume que es nuestra base de datos ```db_customers```, pero queda en memoria, osea si se apaga el servidor se borran los datos. 
 
             ``main.py``
             ```python
             db_customers: list[Customer] = [] #tenemos una lista vacia 
             ``` 
 
-        2. Se recibe un ``customer_data`` del ``CustomerCreate`` del que no tiene el id. 
-            
-            ``main.py``
-            ```python
-            async def create_customer(customer_data: CustomerCreate): 
-            ```
+        2. **Crear un Cliente (POST `/customers`)**
+            - Se recibe un ``customer_data`` del ``CustomerCreate`` del que no tiene el id. 
+                - **`customer_data: CustomerCreate`** → Recibe datos con el modelo `CustomerCreate`:
+
+                    ``main.py``
+        
+                    ```python
+                    @app.post("/customers", response_model=Customer)
+                    async def create_customer(customer_data: CustomerCreate): 
+                    ```         
+
         3. Se valida con la clase `Customer` 
+            - Convierte los datos en una instancia válida de `Customer`
+
+                ``main.py``
+            
+                ```python
+                customer = Customer.model_validate(customer_data.model_dump())
+                ```
+
+        4. Asigna un ID único
+            - Luego, se cuentan cuantos elementos hay en la lista `db_customers` y se asgina como el id del customer
             
             ``main.py``
-            ```python
-            customer = Customer.model_validate(customer_data.model_dump())
-            ```
-        4. Luego, se cuentan cuantos elementos hay en la lista `db_customers` y se asgina como el id del customer
-            
-            ``main.py``
-            ```python
+
+            ```python            
             customer.id = len(db_customers)
             ```
         
-        5. Al final, se agrega el customer a la lista y retorna el customer para que el usuario lo pueda ver
+        5. Guarda el cliente en la lista
+            - Al final, se agrega el customer a la lista y retorna el customer para que el usuario lo pueda ver
             
             ``main.py``
+
             ```python
             db_customers.append(customer)
             return customer
             ```
+
+        **Devuelve el cliente creado**
 
 ### 📌 Listar base de datos en un JSON
 
