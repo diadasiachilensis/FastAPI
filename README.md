@@ -388,7 +388,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
 **Ejemplo de Uso con curl**
     Para **crear un nuevo cliente**, usa:
 
-    ```bash
+```bash
     curl -X 'POST' 'http://127.0.0.1:8000/customers' \
         -H 'Content-Type: application/json' \
         -d '{
@@ -397,11 +397,11 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
             "email": "carlos@example.com",
             "age": 40
             }'
-    ```
+```
 
 🔹**Salida esperada:**
 
-    ```javascript
+```javascript
     {
         "id": 2,
         "name": "Carlos Gómez",
@@ -409,18 +409,18 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
         "email": "carlos@example.com",
         "age": 40
     }
-    ```
+```
 
 **Ejemplo de Uso en `curl`**
     Si quieres obtener la lista de clientes desde la terminal, puedes usar:
 
-    ```bash
+```bash
     curl -X 'GET' 'http://127.0.0.1:8000/customers' -H 'accept: application/json'
-    ```
+```
 
 🔹 **Salida esperada (si hay clientes en la base de datos simulada)**:
 
-    ```javascript
+```javascript
     [
         {
             "id": 0,
@@ -437,7 +437,7 @@ Se crea un nuevo endpoint que va a ser del tipo `get`.
             "age": 29
         }
     ]
-    ```
+```
 
 Si no hay clientes, el resultado será un **JSON vacío**: `[]`.
 
